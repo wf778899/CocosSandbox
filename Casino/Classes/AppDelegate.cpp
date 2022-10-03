@@ -22,8 +22,8 @@
  THE SOFTWARE.
  ****************************************************************************/
 
-#include "AppDelegate.h"
-#include "StartScene.h"
+#include "AppDelegate.hpp"
+#include "StartScene.hpp"
 
 // #define USE_AUDIO_ENGINE 1
 // #define USE_SIMPLE_AUDIO_ENGINE 1
@@ -121,7 +121,6 @@ bool AppDelegate::applicationDidFinishLaunching() {
     auto scene = StartScene::createScene();
 
     // run
-    //TransitionFade *trans = TransitionFade::create(2.0f, scene);
     director->runWithScene(scene);
 
     return true;
