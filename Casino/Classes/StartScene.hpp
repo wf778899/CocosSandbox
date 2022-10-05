@@ -2,7 +2,6 @@
 
 #include "cocos2d.h"
 
-
 class StartScene : public cocos2d::Layer
 {
 public:
@@ -11,7 +10,5 @@ public:
     virtual bool init() override;
     
     CREATE_FUNC(StartScene);
-    
-private:
-    void CreateScammer();
 };
+
