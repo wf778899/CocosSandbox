@@ -21,13 +21,14 @@ private:
     bool onTouchBegan           (cocos2d::Touch *touch, cocos2d::Event *unused_event);
     void onTouchMoved           (cocos2d::Touch *touch, cocos2d::Event *unused_event);
     void onTouchEnded           (cocos2d::Touch *touch, cocos2d::Event *unused_event);
-    void onTouchCancelled       (cocos2d::Touch *touch, cocos2d::Event *unused_event) {}
-    void onCoinHit              (cocos2d::EventCustom *unused_event);
+    void onTouchCancelled       (cocos2d::Touch *touch, cocos2d::Event *unused_event)   {}
+    void onSlotsRotationBegin   (cocos2d::EventCustom *unused_event);
+    void onSlotsRotationFinish  (cocos2d::EventCustom *unusedEvent)                     { m_isDraggingEnabled = true; }
     void onCoinMissed           (cocos2d::EventCustom *unusedEvent);
-    void onSlotsRotationFinish  (cocos2d::EventCustom *unusedEvent);
 
 private:
     cocos2d::Sprite*                m_coin;
+    //cocos2d::SpriteFrme*            m_coin
     cocos2d::ClippingNode*          m_clipper;              // Is used to spawn the money from nowhere ;)
     cocos2d::Point                  m_coinInitialPos;
     cocos2d::Point                  m_coinFallingFromPos;
@@ -41,5 +42,5 @@ private:
     static const float              s_coinFallingTime;      // Period (sec) the coin will falling down to the initial position after spawning
     static const float              s_coinRotationPeriod;   // Period (sec) the coin caught will do full turnover around itself
     static const float              s_coinOffsetY;          // Coin's Y-offset (points) in relation to the bottom side of the Spawner's window
-    static cocos2d::Point           s_coinDropLocation;     // data buffer for "aboutCoinDropped" custom event emitted by CoinSpawner (drop's location: x and y)
+    static cocos2d::Point           s_coinDropLocation;     // data buffer for "coin_dropped_event" custom event emitted by CoinSpawner (drop's location: x and y)
 };

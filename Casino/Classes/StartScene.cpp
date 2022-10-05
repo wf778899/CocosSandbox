@@ -21,10 +21,12 @@ bool StartScene::init()
         return false;
     }
     
+    float scaleFactor = Director::getInstance()->getContentScaleFactor();
+    CCLOG("ScaleFactor is: %f", scaleFactor);
+    
     std::vector<std::string> slotImages = {"res/slot_apple_40x46.png", "res/slot_banana_54x42.png", "res/slot_cherry_42x42.png", "res/slot_orange_50x40.png", "res/slot_strawberry_50x44.png"};
     std::vector<std::string> slotNames = {"Apple", "Banana", "Cherry", "Orange", "Strawberry"};
-    //std::vector<std::string> slotImages = {"res/green_rect_32x32.png", "res/green_rect_32x32.png", "res/green_rect_32x32.png", "res/green_rect_32x32.png", "res/green_rect_32x32.png"};
-    
+
     // Create'n'Setup the Scammer
     Scammer* scammer = Scammer::create(slotImages, slotNames);
     scammer->init();
@@ -39,6 +41,24 @@ bool StartScene::init()
     coinSpawner->setPosition({ 150.0f, 140.0f });
     addChild(coinSpawner);
     
+    // Create the texbox to display the prize
+    m_stakeDisplay = Label::createWithSystemFont("", "arial", 18);
+    m_stakeDisplay->setAnchorPoint(Vec2::ANCHOR_MIDDLE_BOTTOM);
+    m_stakeDisplay->setPosition({Director::getInstance()->getWinSize().width/2, 270.0f});
+    addChild(m_stakeDisplay);
+    
+    EventListenerCustom* customListener1 = EventListenerCustom::create("slots_rotation_finished_event", CC_CALLBACK_1(StartScene::onSlotsRotationFinish, this));
+    EventListenerCustom* customListener2 = EventListenerCustom::create("slots_rotation_begin_event", CC_CALLBACK_1(StartScene::onSlotsRotationBegin, this));
+
+    getEventDispatcher()->addEventListenerWithFixedPriority(customListener1, 1);
+    getEventDispatcher()->addEventListenerWithFixedPriority(customListener2, 1);
+    
     return true;
 }
 
+
+void StartScene::onSlotsRotationFinish(cocos2d::EventCustom *event)
+{
+    const char* prizeName = static_cast<const char*>(event->getUserData());
+    m_stakeDisplay->setString("Congrats! Your stake is: " + std::string(prizeName));
+}

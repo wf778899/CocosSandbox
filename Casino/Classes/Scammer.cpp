@@ -12,6 +12,8 @@ const float Scammer::s_rotationSlowdownResponse = 1.0f;     // time (sec) the ro
 const float Scammer::s_slowDownFactorFrom = 1.0f;           // rotation speed is a function of smoothing between 'slowDownFactorFrom' and 'slowDownFactorTo' values.
 const float Scammer::s_slowDownFactorTo = 0.01f;
 
+char Scammer::s_prizeName[128];                             // data buffer for "slots_rotation_finished_event" custom event emitted by Scammer
+
 
 Scammer* Scammer::create(const std::vector<std::string> &slotImagePaths, const std::vector<std::string> &slotNames)
 {
@@ -64,6 +66,15 @@ void Scammer::drawFrame()
     DrawNode* frame = DrawNode::create();
     frame->drawRect(getPosition(), getContentSize(), Color4F::BLUE);
     addChild(frame);
+    
+    float aimFrameOrigX = s_distanceBetweenSlots/2;
+    float aimFrameOrigY = s_distanceBetweenSlots/2 + (s_slotSize.height + s_distanceBetweenSlots) * s_winningSlotNumber;
+    float aimFrameDestX = aimFrameOrigX + s_slotSize.width + s_distanceBetweenSlots;
+    float aimFrameDestY = aimFrameOrigY + s_slotSize.height + s_distanceBetweenSlots;
+    
+    DrawNode* aimFrame = DrawNode::create();
+    aimFrame->drawRect( {aimFrameOrigX, aimFrameOrigY}, {aimFrameDestX, aimFrameDestY}, Color4F::RED);
+    addChild(aimFrame);
 }
 
 
@@ -113,7 +124,7 @@ void Scammer::onCoinDropped(EventCustom* event)
     
     if(getBoundingBox().containsPoint(*dropPos))
     {
-        getEventDispatcher()->dispatchCustomEvent("coin_hit_event");
+        getEventDispatcher()->dispatchCustomEvent("slots_rotation_begin_event");
         m_doRotate = true;
     }
     else
@@ -158,10 +169,12 @@ void Scammer::update(float dt)
         if(!m_doRotate)
         {
             slowDownFactor = s_slowDownFactorFrom;
-            randSpeedBoost = RandomHelper::random_real<float>(0.0f, s_rotationSpeed/10);
+            randSpeedBoost = RandomHelper::random_real<float>(0, s_rotationSpeed/10);
             
-            getEventDispatcher()->dispatchCustomEvent("slots_rotation_finished_event");
-            CCLOG("Your stake is: %s!", m_slotNames[winnedSlot].c_str());
+            EventCustom event("slots_rotation_finished_event");
+            strcpy(s_prizeName, m_slotNames[winnedSlot].c_str());
+            event.setUserData(s_prizeName);
+            getEventDispatcher()->dispatchEvent(&event);
         }
     }
 }

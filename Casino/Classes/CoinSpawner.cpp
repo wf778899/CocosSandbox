@@ -75,6 +75,7 @@ void CoinSpawner::addCoin()
 {
     m_coin = Sprite::create(m_coinImage);
     m_coin->setAnchorPoint(Vec2::ANCHOR_MIDDLE_BOTTOM);
+    m_coin->setContentSize(getContentSize()/2);
     m_coin->setPosition(m_coinFallingFromPos);
     m_clipper->addChild(m_coin);
     
@@ -97,9 +98,9 @@ void CoinSpawner::subscribeToEvents()
     touchListener->onTouchEnded = CC_CALLBACK_2(CoinSpawner::onTouchEnded, this);
     touchListener->onTouchCancelled = CC_CALLBACK_2(CoinSpawner::onTouchCancelled, this);
     
-    EventListenerCustom* customListener1 = EventListenerCustom::create("coin_hit_event", CC_CALLBACK_1(CoinSpawner::onCoinHit, this));
-    EventListenerCustom* customListener2 = EventListenerCustom::create("coin_missed_event", CC_CALLBACK_1(CoinSpawner::onCoinMissed, this));
+    EventListenerCustom* customListener1 = EventListenerCustom::create("slots_rotation_begin_event", CC_CALLBACK_1(CoinSpawner::onSlotsRotationBegin, this));
     EventListenerCustom* customListener3 = EventListenerCustom::create("slots_rotation_finished_event", CC_CALLBACK_1(CoinSpawner::onSlotsRotationFinish, this));
+    EventListenerCustom* customListener2 = EventListenerCustom::create("coin_missed_event", CC_CALLBACK_1(CoinSpawner::onCoinMissed, this));
     
     getEventDispatcher()->addEventListenerWithSceneGraphPriority(touchListener, this);
     getEventDispatcher()->addEventListenerWithSceneGraphPriority(customListener1, this);
@@ -121,7 +122,7 @@ bool CoinSpawner::onTouchBegan(Touch *touch, Event *unused_event)
         
         m_coin->stopAllActions();
         m_coin->runAction(RepeatForever::create(RotateBy::create(s_coinRotationPeriod, {0.0f, 360.0f, 0.0f})));     // Rotate near Y
-        CCLOG("Coin grabbed");
+
         return true;
     }
     return false;
@@ -151,11 +152,10 @@ void CoinSpawner::onTouchEnded(Touch *touch, Event *unused_event)
     s_coinDropLocation = touch->getLocation();
     event.setUserData(&s_coinDropLocation);
     getEventDispatcher()->dispatchEvent(&event);
-    CCLOG("Coin released");
 }
 
 
-void CoinSpawner::onCoinHit(EventCustom *unused_event)
+void CoinSpawner::onSlotsRotationBegin(EventCustom *unused_event)
 {
     
     Sequence* seq = Sequence::create( CallFunc::create([this] { removeChild(m_coin); }),
@@ -165,7 +165,6 @@ void CoinSpawner::onCoinHit(EventCustom *unused_event)
     
     // Ещё в этот момент стартует грей
     m_isDraggingEnabled = false;
-    CCLOG("Coin Hit!");
 }
 
 
@@ -176,10 +175,4 @@ void CoinSpawner::onCoinMissed(EventCustom *unusedEvent)
                                       CallFunc::create([this] { m_isCoinOnInitialPos = true; }),
                                       nullptr);
     m_coin->runAction(seq);
-    CCLOG("Coin Missed!");
-}
-
-void CoinSpawner::onSlotsRotationFinish(EventCustom *unusedEvent)
-{
-    m_isDraggingEnabled = true;
 }

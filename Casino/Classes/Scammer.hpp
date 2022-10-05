@@ -37,4 +37,6 @@ private:
     static const float              s_rotationSlowdownResponse;     // time (sec) the rotation will smoothley slow down. The greater value - the longer rotation.
     static const float              s_slowDownFactorFrom;           // rotation speed is a function of smoothing between 'slowDownFactorFrom' and 'slowDownFactorTo' values.
     static const float              s_slowDownFactorTo;
+    
+    static char                     s_prizeName[128];               // data buffer for "slots_rotation_finished_event" custom event emitted by Scammer
 };
