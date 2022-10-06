@@ -10,6 +10,11 @@ public:
     virtual bool init() override;
     
 private:
+    bool createScammer();
+    bool createCoinSpawner();
+    void createLabel();
+    void subscribeToEvents();
+    
     void onSlotsRotationBegin   (cocos2d::EventCustom *unusedEvent) { m_stakeDisplay->setString(""); }
     void onSlotsRotationFinish  (cocos2d::EventCustom *event);
     

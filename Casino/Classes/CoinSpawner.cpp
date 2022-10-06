@@ -24,6 +24,9 @@ bool CoinSpawner::init()
     if(!Node::init())
         return false;
     
+    if(!buildShaders())
+        return false;
+    
     drawFrame();            // Draw the green frame around our CoinSpawner
 
     initClipper();
@@ -31,8 +34,14 @@ bool CoinSpawner::init()
     addCoin();              // Put the coin into the spawner window
     
     subscribeToEvents();
-    
+
     return true;
+}
+
+
+CoinSpawner::~CoinSpawner() noexcept
+{
+    m_grayingProg->release();
 }
 
 
@@ -42,11 +51,38 @@ CoinSpawner::CoinSpawner(const std::string& imagePath, Size spawnerSize)
     , m_coinInitialPos(spawnerSize.width/2, s_coinOffsetY)
     , m_coinFallingFromPos(spawnerSize.width/2, spawnerSize.height)
     , m_offsetForMoving{}
+    , m_grayingProg(nullptr)
     , m_coinImage(imagePath)
     , m_isCoinOnInitialPos(false)
     , m_isDraggingEnabled(true)
     , m_coinSpeed( Vec2::ZERO.distance( Point( Director::getInstance()->getWinSize())) * s_coinSpeedNorm)
 {}
+
+
+bool CoinSpawner::buildShaders()
+{
+    std::string fragSource = FileUtils::getInstance()->getStringFromFile("res/shaders/graying.frag");
+    m_grayingProg = GLProgram::createWithByteArrays(ccPositionTextureColor_noMVP_vert, fragSource.c_str());
+    
+    if(!m_grayingProg)
+        return false;
+    
+    m_grayingProg->bindAttribLocation(GLProgram::ATTRIBUTE_NAME_POSITION, GLProgram::VERTEX_ATTRIB_POSITION);
+    m_grayingProg->bindAttribLocation(GLProgram::ATTRIBUTE_NAME_TEX_COORD, GLProgram::VERTEX_ATTRIB_TEX_COORD);
+    
+    m_grayingProg->link();
+    if(!glGetError())
+    {
+        m_grayingProg->updateUniforms();
+        if(!glGetError())
+        {
+            m_grayingProg->retain();
+            return true;
+        }
+    }
+    CHECK_GL_ERROR_DEBUG();
+    return false;
+}
 
 
 void CoinSpawner::drawFrame()
@@ -73,13 +109,14 @@ void CoinSpawner::initClipper()
 
 void CoinSpawner::addCoin()
 {
-    //m_coin = Sprite::create(m_coinImage);
     m_coin = Sprite::createWithSpriteFrameName(m_coinImage);
+    
     m_coin->setAnchorPoint(Vec2::ANCHOR_MIDDLE_BOTTOM);
-    //m_coin->setContentSize(getContentSize()/2);
     m_coin->setPosition(m_coinFallingFromPos);
     m_clipper->addChild(m_coin);
     
+    grayCoin(!m_isDraggingEnabled);
+
     Sequence* seq = Sequence::create(EaseBounceOut::create(MoveTo::create(s_coinFallingTime, m_coinInitialPos)),
                                      CallFunc::create([this]
                                         {
@@ -110,9 +147,26 @@ void CoinSpawner::subscribeToEvents()
 }
 
 
+void CoinSpawner::grayCoin(bool gray)
+{
+    if(gray)
+    {
+        GLProgramState* progState = GLProgramState::getOrCreateWithGLProgram(m_grayingProg);
+        m_coin->setGLProgramState(progState);
+        progState->setUniformTexture("u_texture", m_coin->getTexture());
+        m_coin->getGLProgram()->use();
+    }
+    else
+    {
+        GLProgramState* state = GLProgramState::getOrCreateWithGLProgramName(GLProgram::SHADER_NAME_POSITION_TEXTURE_COLOR_NO_MVP);
+        m_coin->setGLProgramState(state);
+        m_coin->getGLProgram()->use();
+    }
+}
+
+
 bool CoinSpawner::onTouchBegan(Touch *touch, Event *unused_event)
 {
-    
     Point touchInCoinSpace( touch->getLocation().x-getPositionX(),
                             touch->getLocation().y-getPositionY());     // Before the "coin is touched" detection - carrying over touch location from window space to CoinSpawner's space.
     
@@ -163,9 +217,14 @@ void CoinSpawner::onSlotsRotationBegin(EventCustom *unused_event)
                                       CallFunc::create([this] { addCoin(); }),
                                       nullptr);
     runAction(seq);
-    
-    // Ещё в этот момент стартует грей
     m_isDraggingEnabled = false;
+}
+
+
+void CoinSpawner::onSlotsRotationFinish(EventCustom *unusedEvent)
+{
+    m_isDraggingEnabled = true;
+    grayCoin(false);
 }
 
 
