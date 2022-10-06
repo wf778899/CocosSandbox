@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+    <dict>
+        <key>frames</key>
+        <dict>
+            <key>coin23x26.png</key>
+            <dict>
+                <key>aliases</key>
+                <array/>
+                <key>spriteOffset</key>
+                <string>{0,0}</string>
+                <key>spriteSize</key>
+                <string>{23,26}</string>
+                <key>spriteSourceSize</key>
+                <string>{23,26}</string>
+                <key>textureRect</key>
+                <string>{{109,1},{23,26}}</string>
+                <key>textureRotated</key>
+                <false/>
+                <key>triangles</key>
+                <string>1 2 3 0 1 3</string>
+                <key>vertices</key>
+                <string>23 26 0 26 0 0 23 0</string>
+                <key>verticesUV</key>
+                <string>132 27 109 27 109 1 132 1</string>
+            </dict>
+            <key>slot_apple_40x46.png</key>
+            <dict>
+                <key>aliases</key>
+                <array/>
+                <key>spriteOffset</key>
+                <string>{0,0}</string>
+                <key>spriteSize</key>
+                <string>{40,46}</string>
+                <key>spriteSourceSize</key>
+                <string>{40,46}</string>
+                <key>textureRect</key>
+                <string>{{53,45},{40,46}}</string>
+                <key>textureRotated</key>
+                <false/>
+                <key>triangles</key>
+                <string>1 2 3 0 1 3</string>
+                <key>vertices</key>
+                <string>40 46 0 46 0 0 40 0</string>
+                <key>verticesUV</key>
+                <string>93 91 53 91 53 45 93 45</string>
+            </dict>
+            <key>slot_banana_54x42.png</key>
+            <dict>
+                <key>aliases</key>
+                <array/>
+                <key>spriteOffset</key>
+                <string>{0,0}</string>
+                <key>spriteSize</key>
+                <string>{54,42}</string>
+                <key>spriteSourceSize</key>
+                <string>{54,42}</string>
+                <key>textureRect</key>
+                <string>{{1,1},{54,42}}</string>
+                <key>textureRotated</key>
+                <false/>
+                <key>triangles</key>
+                <string>1 2 3 0 1 3</string>
+                <key>vertices</key>
+                <string>54 42 0 42 0 0 54 0</string>
+                <key>verticesUV</key>
+                <string>55 43 1 43 1 1 55 1</string>
+            </dict>
+            <key>slot_cherry_42x42.png</key>
+            <dict>
+                <key>aliases</key>
+                <array/>
+                <key>spriteOffset</key>
+                <string>{0,0}</string>
+                <key>spriteSize</key>
+                <string>{42,42}</string>
+                <key>spriteSourceSize</key>
+                <string>{42,42}</string>
+                <key>textureRect</key>
+                <string>{{96,32},{42,42}}</string>
+                <key>textureRotated</key>
+                <false/>
+                <key>triangles</key>
+                <string>0 4 5 0 3 4 1 2 3 0 1 3</string>
+                <key>vertices</key>
+                <string>42 38 38 42 0 42 0 24 24 0 42 0</string>
+                <key>verticesUV</key>
+                <string>138 70 134 74 96 74 96 56 120 32 138 32</string>
+            </dict>
+            <key>slot_orange_50x40.png</key>
+            <dict>
+                <key>aliases</key>
+                <array/>
+                <key>spriteOffset</key>
+                <string>{0,0}</string>
+                <key>spriteSize</key>
+                <string>{50,40}</string>
+                <key>spriteSourceSize</key>
+                <string>{50,40}</string>
+                <key>textureRect</key>
+                <string>{{57,1},{50,40}}</string>
+                <key>textureRotated</key>
+                <false/>
+                <key>triangles</key>
+                <string>1 2 3 0 1 3</string>
+                <key>vertices</key>
+                <string>50 40 0 40 0 0 50 0</string>
+                <key>verticesUV</key>
+                <string>107 41 57 41 57 1 107 1</string>
+            </dict>
+            <key>slot_strawberry_50x44.png</key>
+            <dict>
+                <key>aliases</key>
+                <array/>
+                <key>spriteOffset</key>
+                <string>{0,0}</string>
+                <key>spriteSize</key>
+                <string>{50,44}</string>
+                <key>spriteSourceSize</key>
+                <string>{50,44}</string>
+                <key>textureRect</key>
+                <string>{{1,45},{50,44}}</string>
+                <key>textureRotated</key>
+                <false/>
+                <key>triangles</key>
+                <string>1 2 3 0 1 3</string>
+                <key>vertices</key>
+                <string>50 44 0 44 0 0 50 0</string>
+                <key>verticesUV</key>
+                <string>51 89 1 89 1 45 51 45</string>
+            </dict>
+        </dict>
+        <key>metadata</key>
+        <dict>
+            <key>format</key>
+            <integer>3</integer>
+            <key>pixelFormat</key>
+            <string>RGBA8888</string>
+            <key>premultiplyAlpha</key>
+            <false/>
+            <key>realTextureFileName</key>
+            <string>sprites.png</string>
+            <key>size</key>
+            <string>{139,92}</string>
+            <key>smartupdate</key>
+            <string>$TexturePacker:SmartUpdate:24072418f73b88800e840f898e428d71:23f6333ce74b34ada1567c4b0e30d3f2:db71e206b3c010bfb176561963c50b15$</string>
+            <key>textureFileName</key>
+            <string>sprites.png</string>
+        </dict>
+    </dict>
+</plist>

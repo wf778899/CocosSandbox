@@ -3,25 +3,23 @@
 
 USING_NS_CC;
 
-const float Scammer::s_distanceBetweenSlots = 10.0f;        // vertical distance between the slots (points)
-const Size  Scammer::s_slotSize = {40.0f, 30.0f};           // slots dimentions
 const int   Scammer::s_visibleSlots = 3;                    // how much slots will you see
 const int   Scammer::s_winningSlotNumber = 1;               // slot's number taking into account after rotation (0 - bottom visible slot). Shouldn't be >= s_visibleSlots
 const int   Scammer::s_rotationSpeed = 1250;                // slots rotation speed (points per sec)
 const float Scammer::s_rotationSlowdownResponse = 1.0f;     // time (sec) the rotation will smoothley slow down. The greater value - the longer rotation.
 const float Scammer::s_slowDownFactorFrom = 1.0f;           // rotation speed is a function of smoothing between 'slowDownFactorFrom' and 'slowDownFactorTo' values.
 const float Scammer::s_slowDownFactorTo = 0.01f;
-
 char Scammer::s_prizeName[128];                             // data buffer for "slots_rotation_finished_event" custom event emitted by Scammer
 
 
-Scammer* Scammer::create(const std::vector<std::string> &slotImagePaths, const std::vector<std::string> &slotNames)
+Scammer* Scammer::create(const std::vector<std::string> &slotImagePaths, const std::vector<std::string> &slotNames, Size slotSize)
 {
-    Scammer *scammer = new Scammer(slotImagePaths, slotNames);
+    float slotGap = sqrtf(powf(slotSize.width, 2) + powf(slotSize.height, 2))/10;
+    Scammer *scammer = new Scammer(slotImagePaths, slotNames, slotSize, slotGap);
     
     Size scammerSize;
-    scammerSize.width = s_slotSize.width + (s_distanceBetweenSlots * 2);
-    scammerSize.height = s_distanceBetweenSlots + ((s_slotSize.height + s_distanceBetweenSlots) * s_visibleSlots);
+    scammerSize.width = slotSize.width + (slotGap * 2);
+    scammerSize.height = slotGap + ((slotSize.height + slotGap) * s_visibleSlots);
 
     scammer->setContentSize(scammerSize);
     scammer->autorelease();
@@ -34,11 +32,11 @@ bool Scammer::init()
     if(!Node::init())
         return false;
     
-    drawFrame();            // draw the blue frame around our Scammer
-
     initClipper();
     
     addSlots();             // Add the slots from top to bottom (starting from invisible area above visible frame)
+    
+    drawFrames();
     
     subscribeToEvents();
 
@@ -48,11 +46,13 @@ bool Scammer::init()
 }
 
 
-Scammer::Scammer(const std::vector<std::string> &slotImagePaths, const std::vector<std::string> &slotNames)
+Scammer::Scammer(const std::vector<std::string> &slotImagePaths, const std::vector<std::string> &slotNames, Size slotSize, float slotGap)
     : m_clipper(nullptr)
     , m_slotImages(slotImagePaths)
     , m_slotNames(slotNames)
+    , m_slotSize(slotSize)
     , m_slotsTopY(0.0f)
+    , m_slotGap(slotGap)
     , m_doRotate(false)
 {
     assert(s_winningSlotNumber <= s_visibleSlots);
@@ -61,16 +61,16 @@ Scammer::Scammer(const std::vector<std::string> &slotImagePaths, const std::vect
 }
 
 
-void Scammer::drawFrame()
+void Scammer::drawFrames()
 {
     DrawNode* frame = DrawNode::create();
     frame->drawRect(getPosition(), getContentSize(), Color4F::BLUE);
     addChild(frame);
     
-    float aimFrameOrigX = s_distanceBetweenSlots/2;
-    float aimFrameOrigY = s_distanceBetweenSlots/2 + (s_slotSize.height + s_distanceBetweenSlots) * s_winningSlotNumber;
-    float aimFrameDestX = aimFrameOrigX + s_slotSize.width + s_distanceBetweenSlots;
-    float aimFrameDestY = aimFrameOrigY + s_slotSize.height + s_distanceBetweenSlots;
+    float aimFrameOrigX = m_slotGap/2;
+    float aimFrameOrigY = m_slotGap/2 + (m_slotSize.height + m_slotGap) * s_winningSlotNumber;
+    float aimFrameDestX = aimFrameOrigX + m_slotSize.width + m_slotGap;
+    float aimFrameDestY = aimFrameOrigY + m_slotSize.height + m_slotGap;
     
     DrawNode* aimFrame = DrawNode::create();
     aimFrame->drawRect( {aimFrameOrigX, aimFrameOrigY}, {aimFrameDestX, aimFrameDestY}, Color4F::RED);
@@ -94,19 +94,18 @@ void Scammer::initClipper()
 
 void Scammer::addSlots()
 {
-    m_slotsTopY = getContentSize().height + (m_slotImages.size() - s_visibleSlots) * (s_slotSize.height + s_distanceBetweenSlots) - s_distanceBetweenSlots;
+    m_slotsTopY = getContentSize().height + (m_slotImages.size() - s_visibleSlots) * (m_slotSize.height + m_slotGap) - m_slotGap - m_slotSize.height/2;
     
-    float slotPosY = s_slotSize.height + s_distanceBetweenSlots;
+    float slotPosY = m_slotGap + m_slotSize.height/2;
     
     for(int i = 0; i < m_slotImages.size(); ++i)
     {
-        Sprite* slot = Sprite::create(m_slotImages[i]);
-        slot->setAnchorPoint(Vec2::ANCHOR_TOP_LEFT);
-        slot->setContentSize(s_slotSize);
-        slot->setPosition({s_distanceBetweenSlots, slotPosY});
+        Sprite* slot = Sprite::createWithSpriteFrameName(m_slotImages[i]);
+        slot->setAnchorPoint(Vec2::ANCHOR_MIDDLE);
+        slot->setPosition({m_slotGap + m_slotSize.width/2, slotPosY});
         m_clipper->addChild(slot);
 
-        slotPosY += (s_slotSize.height + s_distanceBetweenSlots);
+        slotPosY += (m_slotSize.height + m_slotGap);
     }
 }
 
@@ -150,9 +149,9 @@ void Scammer::update(float dt)
         {
             float newPosY = slot->getPositionY() - step;
             
-            if(newPosY < 0)
+            if((newPosY + m_slotSize.height/2) < 0)
             {
-                newPosY = m_slotsTopY + newPosY;
+                newPosY = (m_slotsTopY + newPosY) + m_slotSize.height/2;
                 
                 if(++winnedSlot == m_slotNames.size())
                 {

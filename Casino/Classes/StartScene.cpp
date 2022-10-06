@@ -21,21 +21,21 @@ bool StartScene::init()
         return false;
     }
     
-    float scaleFactor = Director::getInstance()->getContentScaleFactor();
-    CCLOG("ScaleFactor is: %f", scaleFactor);
+    SpriteFrameCache* cache = SpriteFrameCache::getInstance();
+    cache->addSpriteFramesWithFile("res/sprites.plist");
     
-    std::vector<std::string> slotImages = {"res/slot_apple_40x46.png", "res/slot_banana_54x42.png", "res/slot_cherry_42x42.png", "res/slot_orange_50x40.png", "res/slot_strawberry_50x44.png"};
+    std::vector<std::string> slotImages = {"slot_apple_40x46.png", "slot_banana_54x42.png", "slot_cherry_42x42.png", "slot_orange_50x40.png", "slot_strawberry_50x44.png"};
     std::vector<std::string> slotNames = {"Apple", "Banana", "Cherry", "Orange", "Strawberry"};
 
     // Create'n'Setup the Scammer
-    Scammer* scammer = Scammer::create(slotImages, slotNames);
+    Scammer* scammer = Scammer::create(slotImages, slotNames, {70.0f, 55.0f});
     scammer->init();
     scammer->setAnchorPoint(Vec2::ANCHOR_BOTTOM_LEFT);
-    scammer->setPosition({ 250.0f, 100.0f });
+    scammer->setPosition({ 250.0f, 50.0f });
     addChild(scammer);
     
     // Create'n'Setup the CoinSpawner
-    CoinSpawner* coinSpawner = CoinSpawner::create("res/coin23x26.png", {50.0f, 50.0f});
+    CoinSpawner* coinSpawner = CoinSpawner::create("coin23x26.png", {50.0f, 50.0f});
     coinSpawner->init();
     scammer->setAnchorPoint(Vec2::ANCHOR_BOTTOM_LEFT);
     coinSpawner->setPosition({ 150.0f, 140.0f });

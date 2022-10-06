@@ -73,9 +73,10 @@ void CoinSpawner::initClipper()
 
 void CoinSpawner::addCoin()
 {
-    m_coin = Sprite::create(m_coinImage);
+    //m_coin = Sprite::create(m_coinImage);
+    m_coin = Sprite::createWithSpriteFrameName(m_coinImage);
     m_coin->setAnchorPoint(Vec2::ANCHOR_MIDDLE_BOTTOM);
-    m_coin->setContentSize(getContentSize()/2);
+    //m_coin->setContentSize(getContentSize()/2);
     m_coin->setPosition(m_coinFallingFromPos);
     m_clipper->addChild(m_coin);
     
